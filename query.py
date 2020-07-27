@@ -10,6 +10,10 @@ read_queries = {
                        is_anonymous, is_content_sexual, is_content_social, hit_count,
                        positive_vote_count, negative_vote_count, commented_at, created_by_id, parent_board_id
                         from core_article LIMIT {};""",
+    'core_comment': """select id, created_at, updated_at, deleted_at, content,
+                       is_anonymous, positive_vote_count, negative_vote_count, attachment_id, 
+                       created_by_id, parent_article_id, parent_comment_id
+                        from core_comment LIMIT {};""",
     'files': """select id, filename, saved_filename, filepath,
                 user_id, board_id, article_id, deleted 
                 from files LIMIT {};""",
@@ -25,4 +29,6 @@ write_queries = {
                         is_anonymous, positive_vote_count, negative_vote_count, attachment_id, 
                         created_by_id, parent_article_id, parent_comment_id)
                         values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+    'core_attachment': """insert into core_attachment(id, created_at, updated_at, deleted_at, file, mime_type, size)
+                        values (%s, %s, %s, %s, %s, %s, %s),
 }

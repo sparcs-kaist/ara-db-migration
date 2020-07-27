@@ -28,10 +28,12 @@ def _match_board(ara_id):
 def _sync_articles():
     newara_articles = []
 
-    ara_cursor.execute(query=read_queries['articles'] .format(100))
+    ara_cursor.execute(query=read_queries['articles'] .format(500))
     articles = ara_cursor.fetchall()
 
     print(datetime.now(), 'article fetch finished')
+
+    garbage_num = 0
 
     for article in articles:
         if article['parent_id'] is None:
@@ -57,9 +59,13 @@ def _sync_articles():
             }
 
             if parsed['parent_board_id'] is not None:
+                # print(article['id'])
                 newara_articles.append(tuple(parsed.values()))
+            else:
+                garbage_num+=1
 
-    print(datetime.now(), 'ready for execution')
+    print("garbage num {}" .format(garbage_num))
+    print(datetime.now(), 'ready for sync articles')
 
     newara_cursor.executemany(write_queries['core_article'], newara_articles)
     newara_db.commit()
@@ -67,11 +73,11 @@ def _sync_articles():
 def _sync_comments():
     newara_comments = []
 
-    ara_cursor.execute(query=read_queries['articles'].format(100))
+    ara_cursor.execute(query=read_queries['articles'].format(500))
     articles = ara_cursor.fetchall()
-    newara_cursor.execute(query=read_queries['core_article'].format(100))
+    newara_cursor.execute(query=read_queries['core_article'].format(500))
     new_articles = newara_cursor.fetchall()
-    ara_cursor.execute(query=read_queries['files'].format(100))
+    ara_cursor.execute(query=read_queries['files'].format(500))
     files = ara_cursor.fetchall()
 
     print(datetime.now(), 'comment fetch finished')
@@ -95,8 +101,46 @@ def _sync_comments():
 
             newara_comments.append(tuple(parsed.values()))
 
-    print(datetime.now(), 'ready for execution')
+    print(datetime.now(), 'ready for sync comments')
     newara_cursor.executemany(write_queries['core_comment'], newara_comments)
+    newara_db.commit()
+
+
+def _sync_co_comments():
+    newara_co_comments = []
+
+    ara_cursor.execute(query=read_queries['articles'].format(500))
+    articles = ara_cursor.fetchall()
+    newara_cursor.execute(query=read_queries['core_article'].format(500))
+    new_articles = newara_cursor.fetchall()
+    newara_cursor.execute(query=read_queries['core_comment'].format(500))
+    new_comments = newara_cursor.fetchall()
+    ara_cursor.execute(query=read_queries['files'].format(500))
+    files = ara_cursor.fetchall()
+
+    print(datetime.now(), 'comment fetch finished')
+
+    for article in articles:
+        if article['parent_id'] is not None and article['root_id'] != article['parent_id']:
+            parsed = {
+                'id': article['id'],
+                'created_at': article['date'].isoformat(),
+                'updated_at': article['date'].isoformat(),
+                'deleted_at': (article['date'] if article['deleted'] else datetime.min).isoformat(),
+                'content': article['content'],
+                'is_anonymous': False,
+                'positive_vote_count': article['positive_vote'],
+                'negative_vote_count': article['negative_vote'],
+                'attachment_id': get_attachment_id(files, article['id']),
+                'created_by_id': None,
+                'parent_article_id': get_parent_article_id(new_articles, article['root_id']),
+                'parent_comment_id': get_parent_comment_id(new_comments, newara_co_comments, article['root_id'], article['parent_id']),
+            }
+
+            newara_co_comments.append(tuple(parsed.values()))
+
+    print(datetime.now(), 'ready for sync co comments')
+    newara_cursor.executemany(write_queries['core_comment'], newara_co_comments)
     newara_db.commit()
 
 def get_attachment_id(files, article_id):
@@ -106,12 +150,22 @@ def get_attachment_id(files, article_id):
     return None
 
 def get_parent_article_id(new_articles, root_id):
-    for article in new_articles:
-        if article['id'] == root_id:
-            return article['id']
+    for new_article in new_articles:
+        if new_article['id'] == root_id:
+            return new_article['id']
+    return None
+
+def get_parent_comment_id(new_comments, newara_co_comments, root_id, parent_id):
+    for new_comment in new_comments:
+        if new_comment['parent_article_id'] == root_id and new_comment['id'] == parent_id:
+            return new_comment['id']
+    for newara_co_comment in newara_co_comments:
+        if newara_co_comment[0] == parent_id:
+            return newara_co_comment[11]
     return None
 
 def sync():
     _sync_articles()
     _sync_comments()
+    _sync_co_comments()
     print(datetime.now(), 'insertion finished')
