@@ -17,6 +17,10 @@ read_queries = {
     'files': """select id, filename, saved_filename, filepath,
                 user_id, board_id, article_id, deleted 
                 from files LIMIT {};""",
+    'core_attachment': """select id, created_at, updated_at, deleted_at, file, mimetype, size
+                            from core_attachment LIMIT {};""",
+    'core_article_attachments': """select id, article_id, attachment_id
+                            from core_article_attachments LIMIT {};""",                            
 
 }
 
@@ -29,6 +33,15 @@ write_queries = {
                         is_anonymous, positive_vote_count, negative_vote_count, attachment_id, 
                         created_by_id, parent_article_id, parent_comment_id)
                         values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-    'core_attachment': """insert into core_attachment(id, created_at, updated_at, deleted_at, file, mime_type, size)
-                        values (%s, %s, %s, %s, %s, %s, %s),
+    'core_attachment': """insert into core_attachment(id, created_at, updated_at, deleted_at, file, mimetype, size)
+                        values (%s, %s, %s, %s, %s, %s, %s)""",
+    'core_article_attachments': """insert into core_article_attachments(id, article_id, attachment_id)
+                                    values(%s, %s, %s)""",
+}
+
+delete_queries = {
+    'core_article': """delete from core_article LIMIT {};""",
+    'core_comment': """delete from core_comment order by id DESC LIMIT 1;""",
+    'core_attachment': """delete from core_attachment LIMIT {};""",
+    'core_article_attachments': """delete from core_article_attachments LIMIT {};""",
 }
