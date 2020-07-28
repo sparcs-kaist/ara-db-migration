@@ -104,16 +104,18 @@ def _sync_article_attachments():
     new_articles = newara_cursor.fetchall()
     newara_cursor.execute(query=read_queries['core_attachment'].format(500))
     new_attachments = newara_cursor.fetchall()
+    fid = 1
     
     for f in files:
         article = get_article(new_articles, f['article_id'])
         if article:
             parsed = {
-                'id': f['id'],
+                'id': fid,
                 'article_id': article['id'],
                 'attachment_id': f['id'],
             }
             newara_article_attachments.append(tuple(parsed.values()))
+            fid += 1
     
     print(datetime.now(), 'sync article attachments')
     newara_cursor.executemany(write_queries['core_article_attachments'], newara_article_attachments)
