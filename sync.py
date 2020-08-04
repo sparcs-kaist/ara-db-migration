@@ -1,9 +1,26 @@
 from datetime import datetime
 
+import boto3 as boto3
 import bs4 as bs4
+from botocore.exceptions import ClientError
 
 from mysql import ara_cursor, newara_cursor, newara_db
 from query import read_queries, write_queries
+
+
+s3 = boto3.resource('s3')
+client = boto3.client('s3')
+
+
+def _get_s3_object(key):
+    try:
+        obj = s3.ObjectSummary('sparcs-newara', key).get()
+        size = obj['ContentLength']
+        content_type = obj['ContentType']
+        return {'size': size, 'content_type': content_type}
+    except ClientError:
+        print(f'File not exist in s3: {key}')
+        return None
 
 
 def _match_board(ara_id):
@@ -38,14 +55,18 @@ def _sync_attachments():
             parsed = {
                 'id': f['id'],
                 'created_at': article['date'].isoformat(),
-                'updated_at': article['date'].isoformat(),
+                'updated_at': datetime.min.isoformat(),
                 'deleted_at': (article['date'] if article['deleted'] else datetime.min).isoformat(),
                 'file': 'files/{}/{}'.format(f['filepath'], f['saved_filename']),
-                'mimetype': None,
-                'size': None,
+                'mimetype': 'migration failed',
+                'size': 0,
             }
+            file = _get_s3_object(parsed['file'])
+            if file:
+                parsed['size'] = file['size']
+                parsed['mimetype'] = file['content_type']
             newara_files.append(tuple(parsed.values()))
-    
+
     print(datetime.now(), 'sync attachment')
     newara_cursor.executemany(write_queries['core_attachment'], newara_files)
     newara_db.commit()
@@ -64,7 +85,7 @@ def _sync_articles():
             parsed = {
                 'id': article['id'],
                 'created_at': article['date'].isoformat(),
-                'updated_at': article['date'].isoformat(),
+                'updated_at': datetime.min.isoformat(),
                 'deleted_at': (article['date'] if article['deleted'] else datetime.min).isoformat(),
                 'title': article['title'],
                 'content': article['content'],
@@ -97,15 +118,15 @@ def _sync_articles():
 
 def _sync_article_attachments():
     newara_article_attachments = []
-    
-    ara_cursor.execute(query=read_queries['files'] .format(500))
+
+    ara_cursor.execute(query=read_queries['files'].format(500))
     files = ara_cursor.fetchall()
     newara_cursor.execute(query=read_queries['core_article'].format(500))
     new_articles = newara_cursor.fetchall()
     newara_cursor.execute(query=read_queries['core_attachment'].format(500))
     new_attachments = newara_cursor.fetchall()
     fid = 1
-    
+
     for f in files:
         article = get_article(new_articles, f['article_id'])
         if article:
@@ -116,7 +137,7 @@ def _sync_article_attachments():
             }
             newara_article_attachments.append(tuple(parsed.values()))
             fid += 1
-    
+
     print(datetime.now(), 'sync article attachments')
     newara_cursor.executemany(write_queries['core_article_attachments'], newara_article_attachments)
     newara_db.commit()
@@ -137,7 +158,7 @@ def _sync_comments():
             parsed = {
                 'id': article['id'],
                 'created_at': article['date'].isoformat(),
-                'updated_at': article['date'].isoformat(),
+                'updated_at': datetime.min.isoformat(),
                 'deleted_at': (article['date'] if article['deleted'] else datetime.min).isoformat(),
                 'content': article['content'],
                 'is_anonymous': False,
@@ -173,7 +194,7 @@ def _sync_co_comments():
             parsed = {
                 'id': article['id'],
                 'created_at': article['date'].isoformat(),
-                'updated_at': article['date'].isoformat(),
+                'updated_at': datetime.min.isoformat(),
                 'deleted_at': (article['date'] if article['deleted'] else datetime.min).isoformat(),
                 'content': article['content'],
                 'is_anonymous': False,
