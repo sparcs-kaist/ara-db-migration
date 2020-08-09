@@ -1,26 +1,26 @@
 from datetime import datetime
 
-import boto3 as boto3
-import bs4 as bs4
-from botocore.exceptions import ClientError
+# import boto3 as boto3
+# import bs4 as bs4
+# from botocore.exceptions import ClientError
 
 from mysql import ara_cursor, newara_cursor, newara_db
 from query import read_queries, write_queries
 
 
-s3 = boto3.resource('s3')
-client = boto3.client('s3')
+# s3 = boto3.resource('s3')
+# client = boto3.client('s3')
 
 
-def _get_s3_object(key):
-    try:
-        obj = s3.ObjectSummary('sparcs-newara', key).get()
-        size = obj['ContentLength']
-        content_type = obj['ContentType']
-        return {'size': size, 'content_type': content_type}
-    except ClientError:
-        print(f'File not exist in s3: {key}')
-        return None
+# def _get_s3_object(key):
+#     try:
+#         obj = s3.ObjectSummary('sparcs-newara', key).get()
+#         size = obj['ContentLength']
+#         content_type = obj['ContentType']
+#         return {'size': size, 'content_type': content_type}
+#     except ClientError:
+#         print(f'File not exist in s3: {key}')
+#         return None
 
 
 def _match_board(ara_id):
