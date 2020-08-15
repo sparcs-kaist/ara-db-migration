@@ -8,7 +8,8 @@ read_queries = {
                    from articles LIMIT {};""",
     'core_article': """select id, created_at, updated_at, deleted_at, title, content, content_text,
                        is_anonymous, is_content_sexual, is_content_social, hit_count,
-                       positive_vote_count, negative_vote_count, commented_at, created_by_id, parent_board_id
+                       positive_vote_count, negative_vote_count, commented_at, created_by_id, parent_board_id,
+                       parent_topic_id, url
                         from core_article LIMIT {};""",
     'core_comment': """select id, created_at, updated_at, deleted_at, content,
                        is_anonymous, positive_vote_count, negative_vote_count, attachment_id, 
@@ -32,7 +33,7 @@ read_queries = {
                     from auth_user LIMIT {};""",       
     'user_userprofile': """select created_at, updated_at, deleted_at, uid, sid, sso_user_info,
                             picture, nickname, see_sexual, see_social, extra_preferences,
-                            user_id, past_user
+                            user_id, is_past, ara_id, is_kaist
                             from user_userprofile LIMIT {};""",                
 
 }
@@ -40,8 +41,9 @@ read_queries = {
 write_queries = {
     'core_article': """insert into core_article(id, created_at, updated_at, deleted_at, title, content, content_text,
                        is_anonymous, is_content_sexual, is_content_social, hit_count,
-                       positive_vote_count, negative_vote_count, commented_at, created_by_id, parent_board_id)
-                       values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                       positive_vote_count, negative_vote_count, commented_at, created_by_id, parent_board_id,
+                       parent_topic_id, url)
+                       values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
     'core_comment': """insert into core_comment(id, created_at, updated_at, deleted_at, content,
                         is_anonymous, positive_vote_count, negative_vote_count, attachment_id, 
                         created_by_id, parent_article_id, parent_comment_id)
@@ -55,8 +57,8 @@ write_queries = {
                     values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
     'user_userprofile': """insert into user_userprofile(created_at, updated_at, deleted_at,
                             uid, sid, sso_user_info, picture, nickname, see_sexual, see_social,
-                            extra_preferences, user_id, past_user)
-                            values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                            extra_preferences, user_id, is_past, ara_id, is_kaist)
+                            values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
 }
 
 delete_queries = {
