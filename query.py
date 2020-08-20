@@ -27,14 +27,14 @@ read_queries = {
     'core_attachment': """select id, created_at, updated_at, deleted_at, file, mimetype, size
                             from core_attachment LIMIT {};""",
     'core_article_attachments': """select id, article_id, attachment_id
-                            from core_article_attachments LIMIT {};""",     
+                            from core_article_attachments LIMIT {};""",
     'auth_user': """select id, password, last_login, is_superuser, username, first_name, last_name,
                     email, is_staff, is_active, date_joined
-                    from auth_user LIMIT {};""",       
+                    from auth_user LIMIT {};""",
     'user_userprofile': """select created_at, updated_at, deleted_at, uid, sid, sso_user_info,
                             picture, nickname, see_sexual, see_social, extra_preferences,
-                            user_id, is_past, ara_id, is_kaist
-                            from user_userprofile LIMIT {};""",                
+                            user_id, is_newara, ara_id, is_kaist
+                            from user_userprofile LIMIT {};""",
 
 }
 
@@ -57,7 +57,7 @@ write_queries = {
                     values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
     'user_userprofile': """insert into user_userprofile(created_at, updated_at, deleted_at,
                             uid, sid, sso_user_info, picture, nickname, see_sexual, see_social,
-                            extra_preferences, user_id, is_past, ara_id, is_kaist)
+                            extra_preferences, user_id, is_newara, ara_id, is_kaist)
                             values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
 }
 

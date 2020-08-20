@@ -95,7 +95,7 @@ def _sync_user_userprofile(users, auth_users_dict, users_name_dict, miss_users):
                 'see_social': 0,
                 'extra_preferences': "{}",
                 'user_id': user_id,
-                'is_past': 1,
+                'is_newara': 0,
                 'ara_id': user['username'] or "__deleted__{}".format(dup),
                 'is_kaist': 0,
             }
@@ -116,7 +116,7 @@ def _sync_user_userprofile(users, auth_users_dict, users_name_dict, miss_users):
             'see_social': 0,
             'extra_preferences': "{}",
             'user_id': mu,
-            'is_past': 1,
+            'is_newara': 0,
             'ara_id': "__deleted__{}".format(dup),
             'is_kaist': 0,
         }
