@@ -5,7 +5,7 @@ import boto3 as boto3
 import bs4 as bs4
 from botocore.exceptions import ClientError
 
-from mysql import ara_cursor, newara_cursor, newara_db
+from mysql import ara_cursor, newara_middle_cursor, newara_middle_db
 from query import read_queries, write_queries
 
 
@@ -91,8 +91,8 @@ def _sync_articles(articles, auth_users_dict):
     print(datetime.now(), 'sync articles')
     print(author_none)
 
-    newara_cursor.executemany(write_queries['core_article'], newara_articles)
-    newara_db.commit()
+    newara_middle_cursor.executemany(write_queries['core_article'], newara_articles)
+    newara_middle_db.commit()
 
 
 def _sync_attachments(files, articles_dict):
@@ -122,8 +122,8 @@ def _sync_attachments(files, articles_dict):
             newara_files.append(tuple(parsed.values()))
 
     print(datetime.now(), 'sync attachment')
-    newara_cursor.executemany(write_queries['core_attachment'], newara_files)
-    newara_db.commit()
+    newara_middle_cursor.executemany(write_queries['core_attachment'], newara_files)
+    newara_middle_db.commit()
 
 
 
@@ -150,8 +150,8 @@ def _sync_article_attachments(new_articles_dict, files):
             fid += 1
 
     print(datetime.now(), 'sync article attachments')
-    newara_cursor.executemany(write_queries['core_article_attachments'], newara_article_attachments)
-    newara_db.commit()
+    newara_middle_cursor.executemany(write_queries['core_article_attachments'], newara_article_attachments)
+    newara_middle_db.commit()
 
 
 def _sync_comments(articles, new_articles_dict, files_id_dict, auth_users_dict):
@@ -198,8 +198,8 @@ def _sync_comments(articles, new_articles_dict, files_id_dict, auth_users_dict):
 
     print(datetime.now(), 'sync comments')
     print(author_none)
-    newara_cursor.executemany(write_queries['core_comment'], newara_comments)
-    newara_db.commit()
+    newara_middle_cursor.executemany(write_queries['core_comment'], newara_comments)
+    newara_middle_db.commit()
 
 
 def _sync_co_comments(articles, new_articles_dict, new_comments, files_id_dict, auth_users_dict):
@@ -224,7 +224,7 @@ def _sync_co_comments(articles, new_articles_dict, new_comments, files_id_dict, 
             except KeyError:
                 author_none += 1
                 author_id = None
-            
+
             if not parent_article_id: continue
             parsed = {
                 'id': article['id'],
@@ -246,8 +246,8 @@ def _sync_co_comments(articles, new_articles_dict, new_comments, files_id_dict, 
 
     print(datetime.now(), 'sync cocomments')
     print(author_none)
-    newara_cursor.executemany(write_queries['core_comment'], newara_co_comments)
-    newara_db.commit()
+    newara_middle_cursor.executemany(write_queries['core_comment'], newara_co_comments)
+    newara_middle_db.commit()
 
 def get_article(articles, article_id):
     for article in articles:
@@ -280,14 +280,14 @@ def get_parent_comment_id(new_comments, newara_co_comments, root_id, parent_id):
 def sync():
     FETCH_NUM = 600000
     print("{} articles fetch" .format(FETCH_NUM))
-    
+
     ara_cursor.execute(query=read_queries['files'] .format(FETCH_NUM))
     files = ara_cursor.fetchall()
     ara_cursor.execute(query=read_queries['articles'] .format(FETCH_NUM))
     articles = ara_cursor.fetchall()
 
-    newara_cursor.execute(query=read_queries['auth_user'].format(80000))
-    auth_users = newara_cursor.fetchall()
+    newara_middle_cursor.execute(query=read_queries['auth_user'].format(80000))
+    auth_users = newara_middle_cursor.fetchall()
 
     articles_dict = {}
     for article in articles:
@@ -306,10 +306,10 @@ def sync():
     _sync_articles(articles, auth_users_dict)
     _sync_attachments(files, articles_dict)
 
-    newara_cursor.execute(query=read_queries['core_article'].format(FETCH_NUM))
-    new_articles = newara_cursor.fetchall()
-    newara_cursor.execute(query=read_queries['core_attachment'].format(FETCH_NUM))
-    new_attachments = newara_cursor.fetchall()
+    newara_middle_cursor.execute(query=read_queries['core_article'].format(FETCH_NUM))
+    new_articles = newara_middle_cursor.fetchall()
+    newara_middle_cursor.execute(query=read_queries['core_attachment'].format(FETCH_NUM))
+    new_attachments = newara_middle_cursor.fetchall()
 
     new_articles_dict = {}
     for new_article in new_articles:
@@ -320,8 +320,8 @@ def sync():
     _sync_article_attachments(new_articles_dict, files)
     _sync_comments(articles, new_articles_dict, files_id_dict, auth_users_dict)
 
-    newara_cursor.execute(query=read_queries['core_comment'].format(FETCH_NUM))
-    new_comments = newara_cursor.fetchall()
+    newara_middle_cursor.execute(query=read_queries['core_comment'].format(FETCH_NUM))
+    new_comments = newara_middle_cursor.fetchall()
     print('fetched core_comment')
 
     _sync_co_comments(articles, new_articles_dict, new_comments, files_id_dict, auth_users_dict)

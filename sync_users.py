@@ -4,7 +4,7 @@ from datetime import datetime
 # import bs4 as bs4
 # from botocore.exceptions import ClientError
 
-from mysql import ara_cursor, newara_cursor, newara_db
+from mysql import ara_cursor, newara_middle_cursor, newara_middle_db
 from query import read_queries, write_queries
 
 
@@ -34,7 +34,7 @@ def _sync_auth_user(users, miss_users):
                 'is_active': 0,
                 'date_joined': join_time,
             }
-            
+
             newara_auth_user.append(tuple(parsed.values()))
 
     for mu in miss_users:
@@ -54,8 +54,8 @@ def _sync_auth_user(users, miss_users):
         newara_auth_user.append(tuple(parsed.values()))
 
     print(datetime.now(), 'sync auth_user')
-    newara_cursor.executemany(write_queries['auth_user'], newara_auth_user)
-    newara_db.commit()
+    newara_middle_cursor.executemany(write_queries['auth_user'], newara_auth_user)
+    newara_middle_db.commit()
 
 
 def _sync_user_userprofile(users, auth_users_dict, users_name_dict, miss_users):
@@ -79,7 +79,7 @@ def _sync_user_userprofile(users, auth_users_dict, users_name_dict, miss_users):
                 dup += 1
             else:
                 nickname = user['username']
-            
+
             if not user['join_time']: join_time = datetime.now().isoformat()
             else: join_time = user['join_time'].isoformat()
             parsed = {
@@ -123,8 +123,8 @@ def _sync_user_userprofile(users, auth_users_dict, users_name_dict, miss_users):
         newara_user_userprofile.append(tuple(parsed.values()))
 
     print(datetime.now(), 'sync user_userprofile')
-    newara_cursor.executemany(write_queries['user_userprofile'], newara_user_userprofile)
-    newara_db.commit()
+    newara_middle_cursor.executemany(write_queries['user_userprofile'], newara_user_userprofile)
+    newara_middle_db.commit()
 
 
 def get_use_id(auth_users, user_id):
@@ -149,8 +149,8 @@ def sync_users():
 
     _sync_auth_user(users, miss_users)
 
-    newara_cursor.execute(query=read_queries['auth_user'] .format(FETCH_NUM))
-    auth_users = newara_cursor.fetchall()
+    newara_middle_cursor.execute(query=read_queries['auth_user'] .format(FETCH_NUM))
+    auth_users = newara_middle_cursor.fetchall()
 
     auth_users_dict = {}
     for au in auth_users:
