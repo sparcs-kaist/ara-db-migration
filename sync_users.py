@@ -84,7 +84,7 @@ def _sync_user_userprofile(users, auth_users_dict, users_name_dict, miss_users):
             else: join_time = user['join_time'].isoformat()
             parsed = {
                 'created_at': join_time,
-                'updated_at': datetime.min.isoformat(),
+                'updated_at': join_time,
                 'deleted_at': (user['last_login_time'] if user['deleted'] else datetime.min).isoformat(),
                 'uid': None,
                 'sid': None,

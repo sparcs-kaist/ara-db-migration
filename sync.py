@@ -60,7 +60,7 @@ def _sync_articles(articles, auth_users_dict):
             parsed = {
                 'id': article['id'],
                 'created_at': article['date'].isoformat(),
-                'updated_at': datetime.min.isoformat(),
+                'updated_at': article['date'].isoformat(),
                 'deleted_at': (article['date'] if article['deleted'] else datetime.min).isoformat(),
                 'title': article['title'],
                 'content': article['content'],
@@ -109,7 +109,7 @@ def _sync_attachments(files, articles_dict):
             parsed = {
                 'id': f['id'],
                 'created_at': article['date'].isoformat(),
-                'updated_at': datetime.min.isoformat(),
+                'updated_at': article['date'].isoformat(),
                 'deleted_at': (article['date'] if article['deleted'] else datetime.min).isoformat(),
                 'file': 'files/{}/{}'.format(f['filepath'], f['saved_filename']),
                 'mimetype': 'migration failed',
@@ -182,7 +182,7 @@ def _sync_comments(articles, new_articles_dict, files_id_dict, auth_users_dict):
             parsed = {
                 'id': article['id'],
                 'created_at': article['date'].isoformat(),
-                'updated_at': datetime.min.isoformat(),
+                'updated_at': article['date'].isoformat(),
                 'deleted_at': (article['date'] if article['deleted'] else datetime.min).isoformat(),
                 'content': article['content'],
                 'is_anonymous': False,
@@ -229,7 +229,7 @@ def _sync_co_comments(articles, new_articles_dict, new_comments, files_id_dict, 
             parsed = {
                 'id': article['id'],
                 'created_at': article['date'].isoformat(),
-                'updated_at': datetime.min.isoformat(),
+                'updated_at': article['date'].isoformat(),
                 'deleted_at': (article['date'] if article['deleted'] else datetime.min).isoformat(),
                 'content': article['content'],
                 'is_anonymous': False,
