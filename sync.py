@@ -48,6 +48,7 @@ def _sync_articles(articles, auth_users_dict):
 
     author_none = 0
     garbage_num = 0
+    new_id_val = 1 # set new_id_val for consecutive id
 
     for article in tqdm(articles):
         if article['parent_id'] is None:
@@ -59,6 +60,7 @@ def _sync_articles(articles, auth_users_dict):
                 author_id = None
             parsed = {
                 'id': article['id'],
+                'new_id': new_id_val,
                 'created_at': article['date'].isoformat(),
                 'updated_at': article['date'].isoformat(),
                 'deleted_at': (article['date'] if article['deleted'] else datetime.min).isoformat(),
@@ -84,8 +86,11 @@ def _sync_articles(articles, auth_users_dict):
             if parsed['parent_board_id'] is not None:
                 # print(article['id'])
                 newara_articles.append(tuple(parsed.values()))
+                new_id_val += 1
+
             else:
                 garbage_num+=1
+
 
     print("garbage num {}" .format(garbage_num))
     print(datetime.now(), 'sync articles')
@@ -97,6 +102,8 @@ def _sync_articles(articles, auth_users_dict):
 
 def _sync_attachments(files, articles_dict):
     newara_files = []
+    # set a consecutive id: new_id
+    new_id_val = 1
 
     for f in tqdm(files):
         # print(f['article_id'])
@@ -108,6 +115,7 @@ def _sync_attachments(files, articles_dict):
         if article:
             parsed = {
                 'id': f['id'],
+                'new_id': new_id_val,
                 'created_at': article['date'].isoformat(),
                 'updated_at': article['date'].isoformat(),
                 'deleted_at': (article['date'] if article['deleted'] else datetime.min).isoformat(),
@@ -115,6 +123,7 @@ def _sync_attachments(files, articles_dict):
                 'mimetype': 'migration failed',
                 'size': 0,
             }
+            new_id_val += 1
             file = _get_s3_object(parsed['file'])
             if file:
                 parsed['size'] = file['size']
@@ -126,8 +135,7 @@ def _sync_attachments(files, articles_dict):
     newara_middle_db.commit()
 
 
-
-def _sync_article_attachments(new_articles_dict, files):
+def _sync_article_attachments(new_articles_dict, files, file_id_to_newid_dict):
     newara_article_attachments = []
 
     fid = 1
@@ -141,10 +149,11 @@ def _sync_article_attachments(new_articles_dict, files):
             article = None
         # article = get_article(new_articles, f['article_id'])
         if article:
+            # 여기서 두개다 new_id로 바꾸기
             parsed = {
                 'id': fid,
                 'article_id': article['id'],
-                'attachment_id': f['id'],
+                'attachment_id': file_id_to_newid_dict[f['id']],
             }
             newara_article_attachments.append(tuple(parsed.values()))
             fid += 1
@@ -157,6 +166,9 @@ def _sync_article_attachments(new_articles_dict, files):
 def _sync_comments(articles, new_articles_dict, files_id_dict, auth_users_dict):
     newara_comments = []
     author_none = 0
+
+    # set a consecutive id: new_id
+    new_id_val = 1
 
     for article in tqdm(articles):
         if article['parent_id'] is not None and article['root_id'] == article['parent_id']:
@@ -181,6 +193,7 @@ def _sync_comments(articles, new_articles_dict, files_id_dict, auth_users_dict):
             if not parent_article_id: continue
             parsed = {
                 'id': article['id'],
+                'new_id': new_id_val,
                 'created_at': article['date'].isoformat(),
                 'updated_at': article['date'].isoformat(),
                 'deleted_at': (article['date'] if article['deleted'] else datetime.min).isoformat(),
@@ -193,6 +206,7 @@ def _sync_comments(articles, new_articles_dict, files_id_dict, auth_users_dict):
                 'parent_article_id': parent_article_id,
                 'parent_comment_id': None,
             }
+            new_id_val += 1
 
             newara_comments.append(tuple(parsed.values()))
 
@@ -200,12 +214,12 @@ def _sync_comments(articles, new_articles_dict, files_id_dict, auth_users_dict):
     print(author_none)
     newara_middle_cursor.executemany(write_queries['core_comment'], newara_comments)
     newara_middle_db.commit()
+    return new_id_val
 
 
-def _sync_co_comments(articles, new_articles_dict, new_comments, files_id_dict, auth_users_dict):
+def _sync_co_comments(articles, new_articles_dict, new_comments, files_id_dict, auth_users_dict, new_id_val):
     newara_co_comments = []
     author_none = 0
-
     for article in tqdm(articles):
         if article['parent_id'] is not None and article['root_id'] != article['parent_id']:
             try:
@@ -228,6 +242,7 @@ def _sync_co_comments(articles, new_articles_dict, new_comments, files_id_dict, 
             if not parent_article_id: continue
             parsed = {
                 'id': article['id'],
+                'new_id': new_id_val,
                 'created_at': article['date'].isoformat(),
                 'updated_at': article['date'].isoformat(),
                 'deleted_at': (article['date'] if article['deleted'] else datetime.min).isoformat(),
@@ -241,6 +256,7 @@ def _sync_co_comments(articles, new_articles_dict, new_comments, files_id_dict, 
                 'parent_article_id': parent_article_id,
                 'parent_comment_id': get_parent_comment_id(new_comments, newara_co_comments, article['root_id'], article['parent_id']),
             }
+            new_id_val += 1
 
             newara_co_comments.append(tuple(parsed.values()))
 
@@ -248,6 +264,7 @@ def _sync_co_comments(articles, new_articles_dict, new_comments, files_id_dict, 
     print(author_none)
     newara_middle_cursor.executemany(write_queries['core_comment'], newara_co_comments)
     newara_middle_db.commit()
+
 
 def get_article(articles, article_id):
     for article in articles:
@@ -262,11 +279,13 @@ def get_attachment_id(files, article_id):
             return f['id']
     return None
 
+
 def get_parent_article_id(new_articles, root_id):
     for new_article in new_articles:
         if new_article['id'] == root_id:
             return new_article['id']
     return None
+
 
 def get_parent_comment_id(new_comments, newara_co_comments, root_id, parent_id):
     for new_comment in new_comments:
@@ -274,8 +293,9 @@ def get_parent_comment_id(new_comments, newara_co_comments, root_id, parent_id):
             return new_comment['id']
     for newara_co_comment in newara_co_comments:
         if newara_co_comment[0] == parent_id:
-            return newara_co_comment[11]
+            return newara_co_comment[12] # parent comment id
     return None
+
 
 def sync():
     FETCH_NUM = 600000
@@ -311,18 +331,22 @@ def sync():
     newara_middle_cursor.execute(query=read_queries['core_attachment'].format(FETCH_NUM))
     new_attachments = newara_middle_cursor.fetchall()
 
-    new_articles_dict = {}
+    new_articles_dict = {} # map old article id to new article id
     for new_article in new_articles:
         new_articles_dict[new_article['id']] = new_article
 
+    file_id_to_newid_dict = {}  # map old attachment id to new attachment id
+    for attachment in new_attachments:
+        file_id_to_newid_dict[attachment['id']] = attachment['id']
+
     print('fetched core_article and core_attachment')
 
-    _sync_article_attachments(new_articles_dict, files)
-    _sync_comments(articles, new_articles_dict, files_id_dict, auth_users_dict)
+    _sync_article_attachments(new_articles_dict, files, file_id_to_newid_dict)
+    next_comment_id = _sync_comments(articles, new_articles_dict, files_id_dict, auth_users_dict)
 
     newara_middle_cursor.execute(query=read_queries['core_comment'].format(FETCH_NUM))
     new_comments = newara_middle_cursor.fetchall()
     print('fetched core_comment')
 
-    _sync_co_comments(articles, new_articles_dict, new_comments, files_id_dict, auth_users_dict)
+    _sync_co_comments(articles, new_articles_dict, new_comments, files_id_dict, auth_users_dict, next_comment_id)
     print(datetime.now(), 'insertion finished')
