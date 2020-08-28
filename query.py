@@ -36,6 +36,27 @@ read_queries = {
                             user_id, new_id, is_newara, ara_id, is_kaist
                             from user_userprofile LIMIT {};""",
 
+    'auth_user_consecutive': """select id, password, last_login, is_superuser, username, first_name, last_name,
+                   email, is_staff, is_active, date_joined
+                   from auth_user LIMIT {};""",
+    'user_userprofile_consecutive': """select created_at, updated_at, deleted_at, uid, sid, sso_user_info,
+                           picture, nickname, nickname_updated_at, see_sexual, see_social, extra_preferences,
+                           user_id, is_newara, ara_id, is_kaist
+                           from user_userprofile LIMIT {};""",
+    'core_article_consecutive': """select id, created_at, updated_at, deleted_at, title, content, content_text,
+                    is_anonymous, is_content_sexual, is_content_social, hit_count,
+                    positive_vote_count, negative_vote_count, commented_at, created_by_id, parent_board_id,
+                    parent_topic_id, url
+                     from core_article LIMIT {};""",
+    'core_comment_consecutive': """select id, created_at, updated_at, deleted_at, content,
+                    is_anonymous, positive_vote_count, negative_vote_count, attachment_id, 
+                    created_by_id, parent_article_id, parent_comment_id
+                     from core_comment LIMIT {};""",
+    'core_attachment_consecutive': """select id, created_at, updated_at, deleted_at, file, mimetype, size
+                           from core_attachment LIMIT {};""",
+    'articles_with_ara_links': """select * from core_article where content like '%ara.kaist.ac.kr/%';""",
+    'comments_with_ara_links': """select * from core_comment where content like '%ara.kaist.ac.kr/%';""",
+
 }
 
 # queries without 'consecutive' contain the column 'new_id'
@@ -91,4 +112,10 @@ delete_queries = {
     'core_article_attachments': """delete from core_article_attachments LIMIT {};""",
     'user_userprofile': """delete from user_userprofile LIMIT {};""",
     'auth_user': """delete from auth_user LIMIT {};""",
+}
+
+update_queries = {
+    'core_article_content': """UPDATE core_article SET content = %s, content_text = %s WHERE id = %s;""",
+    'core_comment_content': """UPDATE core_comment SET content = %s WHERE id = %s;""",
+
 }
