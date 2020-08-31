@@ -49,7 +49,7 @@ def _make_consecutive_user_userprofile_id(users):
             'user_id': user['new_id'],
             'is_newara': user['is_newara'],
             'ara_id': user['ara_id'],
-            'is_kaist': user['is_kaist'],
+            'group': user['group'],
         }
 
         newara_user_userprofile.append(tuple(parsed.values()))
