@@ -33,7 +33,7 @@ read_queries = {
                     from auth_user LIMIT {};""",
     'user_userprofile': """select created_at, updated_at, deleted_at, uid, sid, sso_user_info,
                             picture, nickname, nickname_updated_at, see_sexual, see_social, extra_preferences,
-                            user_id, new_id, is_newara, ara_id, is_kaist
+                            user_id, new_id, is_newara, ara_id, `group`
                             from user_userprofile LIMIT {};""",
 
     'auth_user_consecutive': """select id, password, last_login, is_superuser, username, first_name, last_name,
@@ -41,7 +41,7 @@ read_queries = {
                    from auth_user LIMIT {};""",
     'user_userprofile_consecutive': """select created_at, updated_at, deleted_at, uid, sid, sso_user_info,
                            picture, nickname, nickname_updated_at, see_sexual, see_social, extra_preferences,
-                           user_id, is_newara, ara_id, is_kaist
+                           user_id, is_newara, ara_id, `group`
                            from user_userprofile LIMIT {};""",
     'core_article_consecutive': """select id, created_at, updated_at, deleted_at, title, content, content_text,
                     is_anonymous, is_content_sexual, is_content_social, hit_count,
@@ -80,7 +80,7 @@ write_queries = {
                     values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
     'user_userprofile': """insert into user_userprofile(created_at, updated_at, deleted_at,
                             uid, sid, sso_user_info, picture, nickname, nickname_updated_at, see_sexual, see_social,
-                            extra_preferences, user_id, new_id, is_newara, ara_id, is_kaist)
+                            extra_preferences, user_id, new_id, is_newara, ara_id, `group`)
                             values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
 
     'core_article_consecutive': """insert into core_article(id, created_at, updated_at, deleted_at, title, content, content_text,
@@ -101,7 +101,7 @@ write_queries = {
                  values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
     'user_userprofile_consecutive': """insert into user_userprofile(created_at, updated_at, deleted_at,
                          uid, sid, sso_user_info, picture, nickname, nickname_updated_at, see_sexual, see_social,
-                         extra_preferences, user_id, is_newara, ara_id, is_kaist)
+                         extra_preferences, user_id, is_newara, ara_id, `group`)
                          values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
 }
 

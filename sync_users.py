@@ -106,7 +106,7 @@ def _sync_user_userprofile(users, auth_users_dict, id_to_newid_dict, users_name_
                 'new_id': id_to_newid_dict[user['id']],
                 'is_newara': 0,
                 'ara_id': user['username'] or "__deleted__{}".format(dup),
-                'is_kaist': 0,
+                'group': 0,
             }
 
             newara_user_userprofile.append(tuple(parsed.values()))
@@ -129,7 +129,7 @@ def _sync_user_userprofile(users, auth_users_dict, id_to_newid_dict, users_name_
             'new_id' : id_to_newid_dict[mu],
             'is_newara': 0,
             'ara_id': "__deleted__{}".format(dup),
-            'is_kaist': 0,
+            'group': 0,
         }
         newara_user_userprofile.append(tuple(parsed.values()))
 
