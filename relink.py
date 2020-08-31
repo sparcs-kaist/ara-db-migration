@@ -6,10 +6,10 @@ from query import read_queries, write_queries, update_queries
 
 NEWARA_LINK = 'https://newara.dev.sparcs.org/'
 
-corner_cases = []
+corner_cases = [] # cases that cannot be changed to NEWARA_LINK
 
 article_id_to_newid_dict = {}
-attachment_id_to_newid_dict = {}
+attachment_id_to_path_dict = {}
 comment_id_to_newid_dict = {}
 comment_get_parent_article_id = {}
 
@@ -113,11 +113,12 @@ def replace_link(content_str):
     if path[-1] == '':
         del path[-1]
 
-    # case 1: variation of ara's main page (ex. mobile main page)
+    # case 1: variation of ara's main page (ex. mobile main page: ara.kaist.ac.kr/mobile/)
+    # (주로 옛날에 모바일 페이지 테스트하는 링크들이라서 새 링크로 바꿀 필요가 없음)
     if len(path) == 1:
         return content_str
 
-    # case 2: link is board, post, or attachment file
+    # case 2: link is board, post, attachment file, or query on a board
     elif path[1] == 'board':
         # case 2-a: link is a board
         if len(path) < 4:
@@ -135,35 +136,56 @@ def replace_link(content_str):
         if 'file' in path:
             file_index = path.index('file')
             old_attachment_id = int(path[file_index + 1])
-            new_attachment_id = attachment_id_to_newid_dict[old_attachment_id]
-            # TODO: 현재 프론트의 첨부 파일 링크가 구현되지 않아서 attachment/로 넣었습니다. 추후에 구현되면 수정하겠습니다.
-            new_link = NEWARA_LINK + "attachment/" + str(new_attachment_id)
+            attachment_path = attachment_id_to_path_dict[old_attachment_id]
+            new_link = 'https://sparcs-newara.s3.amazonaws.com/ara-' + attachment_path
             return replace_link(content_str.replace(old_link, new_link, 1))
 
-        # case 2-c: write
+        # case 2-c: link is write page
         elif path[3] == 'write':
             new_link = NEWARA_LINK + 'write'
             return replace_link(content_str.replace(old_link, new_link, 1))
 
-        # case 2-d: link to a post: contains board/{boardName}/{articleID}
+        # case 2-d: link is query on a board
+        elif path[3] == 'search':
+            search_word_pos = path[4].find('search_word=') + 12
+            search_word = path[4][search_word_pos:]
+
+            # check if this query is made to a valid board. If not valid board, query on all boards
+            try:
+                new_board_name = old_board_name_to_new_name[path[2]]
+                new_link = NEWARA_LINK + 'board/' + new_board_name + '?query=' + search_word
+
+            except KeyError: # if this board no longer exists, return original link
+                new_link = NEWARA_LINK + 'board?query=' + search_word
+
+            return replace_link(content_str.replace(old_link, new_link, 1))
+
+        # case 2-e: link to a post: contains board/{boardName}/{articleID}
         else:
             try:
                 old_id = int(path[3].split('#')[0])
                 new_article_id = article_id_to_newid_dict.get(old_id, None)
-                if new_article_id is None:
+                if new_article_id is None: # this link is a comment. Change old link to new link of parent article
                     new_comment_id = comment_id_to_newid_dict[old_id]
                     new_article_id = comment_get_parent_article_id[new_comment_id]
 
-            except KeyError: # unable to index article/comment
-                corner_cases.append(old_link)
-                return content_str
-
-            except ValueError: # value in link is not a number
+            # KeyError: unable to index article/comment
+            # ValueError: value in link is not a number
+            except (KeyError, ValueError):
                 corner_cases.append(old_link)
                 return content_str
 
             new_link = NEWARA_LINK + "post/" + str(new_article_id)
             return replace_link(content_str.replace(old_link, new_link, 1))
+
+    # case 3: link is query on all boards
+    elif path[2] == 'search':
+        search_word_pos = path[3].find('search_word=') + 12
+        search_word = path[3][search_word_pos:]
+
+        new_link = NEWARA_LINK + 'board?query=' + search_word
+
+        return replace_link(content_str.replace(old_link, new_link, 1))
 
     # case 3: 전체게시판/스크랩북의 게시물
     elif path[1] == 'all' or path[1] == 'scrapbook':
@@ -172,26 +194,27 @@ def replace_link(content_str):
                 old_id = int(path[2].split('#')[0])
                 new_article_id = article_id_to_newid_dict.get(old_id, None)
 
-            except KeyError:
-                return content_str
-
-            except ValueError:
+            except (KeyError, ValueError):
+                corner_cases.append(old_link)
                 return content_str
 
             new_link = NEWARA_LINK + "post/" + str(new_article_id)
-            return replace_link(content_str.replace(old_link, new_link, 1))
+
+        elif path[1] == 'scrapbook':
+            new_link = NEWARA_LINK + 'archive'
 
         else:
             new_link = NEWARA_LINK + 'board'
-            return replace_link(content_str.replace(old_link, new_link, 1))
+
+        return replace_link(content_str.replace(old_link, new_link, 1))
 
     elif path[1] == 'main':
         return replace_link(content_str.replace(old_link, NEWARA_LINK, 1))
 
-    # TODO: 현재 black list page가 없어서 이 부분을 구현하지 못했습니다. 추후에 blacklist가 생기면 구현하겠습니다.
     # case 4: link to blacklist page
     elif old_link.find('blacklist') > -1:
-        return content_str
+        new_link = NEWARA_LINK + 'myinfo' # 뉴아라에서는 blacklist를 마이페이지에서 볼 수 있음
+        return replace_link(content_str.replace(old_link, new_link, 1))
 
     else: # if not in these cases, accumulate link in a list and print later, to find corner cases
         corner_cases.append(old_link)
@@ -219,9 +242,9 @@ def update_ara_links():
     newara_middle_cursor.execute(query=read_queries['core_attachment'].format(FETCH_NUM))
     core_attachment = newara_middle_cursor.fetchall()
 
-    # create dictionary mapping old attachment id -> new attachment id
+    # create dictionary mapping old attachment id -> attachment path
     for att in core_attachment:
-        attachment_id_to_newid_dict[att['id']] = att['new_id']
+        attachment_id_to_path_dict[att['id']] = att['file']
 
     # identify all articles that contain "ara.kaist.ac.kr"
     newara_consecutive_cursor.execute(query=read_queries['articles_with_ara_links'].format(FETCH_NUM))
@@ -230,7 +253,6 @@ def update_ara_links():
     relink_articles(articles_with_links)
 
     # check comments
-
     print('start relinking comments')
 
     # identify all comments that contain "ara.kaist.ac.kr"

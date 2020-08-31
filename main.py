@@ -11,9 +11,9 @@ import time
 def main():
     print(datetime.now(), 'main start')
     start = time.time()
-    # sync_users()
-    # sync()
-    # make_consecutive_id()
+    sync_users()
+    sync()
+    make_consecutive_id()
     update_ara_links()
     end = time.time()
     print("Migration took {} seconds".format(end-start))
