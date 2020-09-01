@@ -24,23 +24,74 @@ def _get_s3_object(key):
         return None
 
 
-def _match_board(ara_id):
-    return {
-        1: 1,
-        2: 7,
-        3: 3,
-        5: 7,
-        8: 5,
-        10: 7,
-        17: 7,
-        29: 7,
-        30: 7,
-        42: 6,
-        43: 4,
-        48: 7,
-        49: 5,
-        51: 6,
-    }.get(ara_id, None)
+def _match_board_and_topic(ara_board, ara_heading):
+    board_and_heading = {
+        42: (2, 6),
+        41: (2, 5),
+        39: (2, 2),
+        12: (2, 8),
+        11: (2, 3),
+        10: (2, 9),
+        9: (2, 4),
+        8: (2, 1),
+        4: (4, 13),
+        1: (7, None),
+        2: (7, None),
+        3: (7, None),
+        5: (7, None),
+        6: (7, None),
+        7: (7, None),
+        13: (3, 18),
+        30: (2, None),
+        34: (7, 10),
+        33: (7, 10),
+        14: (7, None),
+        15: (7, None),
+        16: (7, None),
+        17: (7, None),
+        18: (7, None),
+        19: (7, None),
+        26: (7, 12),
+        27: (7, 12),
+        28: (7, 12),
+        25: (7, 12),
+        24: (7, 12),
+        20: (4, None),
+        21: (4, None),
+        23: (6, None),
+        22: (6, None),
+        35: (3, None),
+        36: (3, 16),
+        37: (3, None),
+        38: (3, None),
+    }.get(ara_heading)
+
+    if board_and_heading:
+        return board_and_heading
+
+    else:
+        board_and_heading = {
+            1: (2, None),
+            2: (7, None),
+            3: (5, None),
+            5: (7, 11),
+            8: (3, None),
+            10: (7, None),
+            17: (7, 10),
+            29: (7, None),
+            30: (7, 12),
+            42: (4, None),
+            43: (6, None),
+            48: (7, None),
+            49: (3, 16),
+            51: (4, 20),
+        }.get(ara_board)
+
+    if board_and_heading:
+        return board_and_heading
+
+    else:
+        return (None, None)
 
 
 def _sync_articles(articles, auth_users_dict):
@@ -78,8 +129,8 @@ def _sync_articles(articles, auth_users_dict):
                 'created_by_id': author_id,
                 # 'created_by_id': article['author_id'],
                 # 'created_by_nickname': article['nickname'],
-                'parent_board_id': _match_board(article['board_id']),
-                'parent_topic_id': None,
+                'parent_board_id': _match_board_and_topic(article['board_id'], article['heading_id'])[0],
+                'parent_topic_id': _match_board_and_topic(article['board_id'], article['heading_id'])[1],
                 'url': None,
             }
 
