@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from tqdm import tqdm
 
 import boto3 as boto3
@@ -28,18 +28,18 @@ def _match_board(ara_id):
     return {
         1: 1,
         2: 7,
-        3: 3,
+        3: 5,
         5: 7,
-        8: 5,
+        8: 3,
         10: 7,
         17: 7,
         29: 7,
         30: 7,
-        42: 6,
-        43: 4,
+        42: 4,
+        43: 6,
         48: 7,
         49: 5,
-        51: 6,
+        51: 4,
     }.get(ara_id, None)
 
 
@@ -56,28 +56,25 @@ def _sync_articles(articles, auth_users_dict):
                 author_id = auth_users_dict[article['author_id']]
             except KeyError:
                 author_none += 1
-                print(article)
-                author_id = None
+                print('article id: ', article['id'], 'author id: ', article['author_id'])
+                # author_id = None
             parsed = {
                 'id': article['id'],
                 'new_id': new_id_val,
-                'created_at': article['date'].isoformat(),
-                'updated_at': article['date'].isoformat(),
-                'deleted_at': (article['date'] if article['deleted'] else datetime.min).isoformat(),
+                'created_at': (article['date'] - timedelta(hours=9)).isoformat(),
+                'updated_at': (article['date'] - timedelta(hours=9)).isoformat(),
+                'deleted_at': ((article['date'] - timedelta(hours=9)) if article['deleted'] else datetime.min).isoformat(),
                 'title': article['title'],
                 'content': article['content'],
                 'content_text': ' '.join(bs4.BeautifulSoup(article['content'], features='html5lib').find_all(text=True)),
-                # 'content_text': '',
                 'is_anonymous': False,
                 'is_content_sexual': False,
                 'is_content_social': False,
                 'hit_count': article['hit'],
                 'positive_vote_count': article['positive_vote'],
                 'negative_vote_count': article['negative_vote'],
-                'commented_at': article['last_reply_date'].isoformat(),
+                'commented_at': (article['last_reply_date'] - timedelta(hours=9)).isoformat(),
                 'created_by_id': author_id,
-                # 'created_by_id': article['author_id'],
-                # 'created_by_nickname': article['nickname'],
                 'parent_board_id': _match_board(article['board_id']),
                 'parent_topic_id': None,
                 'url': None,
@@ -90,7 +87,6 @@ def _sync_articles(articles, auth_users_dict):
 
             else:
                 garbage_num+=1
-
 
     print("garbage num {}" .format(garbage_num))
     print(datetime.now(), 'sync articles')
@@ -116,10 +112,10 @@ def _sync_attachments(files, articles_dict):
             parsed = {
                 'id': f['id'],
                 'new_id': new_id_val,
-                'created_at': article['date'].isoformat(),
-                'updated_at': article['date'].isoformat(),
-                'deleted_at': (article['date'] if article['deleted'] else datetime.min).isoformat(),
-                'file': 'files/{}/{}'.format(f['filepath'], f['saved_filename']),
+                'created_at': (article['date'] - timedelta(hours=9)).isoformat(),
+                'updated_at': (article['date'] - timedelta(hours=9)).isoformat(),
+                'deleted_at': ((article['date'] - timedelta(hours=9)) if article['deleted'] else datetime.min).isoformat(),
+                'file': 'ara-files/{}/{}'.format(f['filepath'], f['saved_filename']),
                 'mimetype': 'migration failed',
                 'size': 0,
             }
@@ -194,9 +190,9 @@ def _sync_comments(articles, new_articles_dict, files_id_dict, auth_users_dict):
             parsed = {
                 'id': article['id'],
                 'new_id': new_id_val,
-                'created_at': article['date'].isoformat(),
-                'updated_at': article['date'].isoformat(),
-                'deleted_at': (article['date'] if article['deleted'] else datetime.min).isoformat(),
+                'created_at': (article['date'] - timedelta(hours=9)).isoformat(),
+                'updated_at': (article['date'] - timedelta(hours=9)).isoformat(),
+                'deleted_at': ((article['date'] - timedelta(hours=9)) if article['deleted'] else datetime.min).isoformat(),
                 'content': article['content'],
                 'is_anonymous': False,
                 'positive_vote_count': article['positive_vote'],
@@ -243,9 +239,9 @@ def _sync_co_comments(articles, new_articles_dict, new_comments, files_id_dict, 
             parsed = {
                 'id': article['id'],
                 'new_id': new_id_val,
-                'created_at': article['date'].isoformat(),
-                'updated_at': article['date'].isoformat(),
-                'deleted_at': (article['date'] if article['deleted'] else datetime.min).isoformat(),
+                'created_at': (article['date'] - timedelta(hours=9)).isoformat(),
+                'updated_at': (article['date'] - timedelta(hours=9)).isoformat(),
+                'deleted_at': ((article['date'] - - timedelta(hours=9)) if article['deleted'] else datetime.min).isoformat(),
                 'content': article['content'],
                 'is_anonymous': False,
                 'positive_vote_count': article['positive_vote'],
@@ -323,7 +319,7 @@ def sync():
 
     print("fetched files and articles")
 
-    _sync_articles(articles, auth_users_dict)
+    # _sync_articles(articles, auth_users_dict)
     _sync_attachments(files, articles_dict)
 
     newara_middle_cursor.execute(query=read_queries['core_article'].format(FETCH_NUM))
@@ -349,4 +345,5 @@ def sync():
     print('fetched core_comment')
 
     _sync_co_comments(articles, new_articles_dict, new_comments, files_id_dict, auth_users_dict, next_comment_id)
+
     print(datetime.now(), 'insertion finished')

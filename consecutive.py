@@ -221,4 +221,5 @@ def make_consecutive_id():
 
     _make_consecutive_comments_id(core_comment, user_id_to_newid_dict, article_id_to_newid_dict, attach_id_to_newid_dict, comment_id_to_newid_dict)
     print(datetime.now(), 'comment id modification finished')
+
     print(datetime.now(), 'finish db migration :)')

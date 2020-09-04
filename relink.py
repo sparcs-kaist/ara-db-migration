@@ -14,7 +14,7 @@ comment_id_to_newid_dict = {}
 comment_get_parent_article_id = {}
 
 old_board_name_to_new_name = {
-    'notice': 'portal',
+    'notice': 'portal-notice',
     'garbages': 'talk',
     'food': 'food',
     'love': 'talk',
@@ -179,7 +179,7 @@ def replace_link(content_str):
             return replace_link(content_str.replace(old_link, new_link, 1))
 
     # case 3: link is query on all boards
-    elif path[2] == 'search':
+    elif len(path) > 2 and path[2] == 'search':
         search_word_pos = path[3].find('search_word=') + 12
         search_word = path[3][search_word_pos:]
 
@@ -187,7 +187,7 @@ def replace_link(content_str):
 
         return replace_link(content_str.replace(old_link, new_link, 1))
 
-    # case 3: 전체게시판/스크랩북의 게시물
+    # case 4: 전체게시판/스크랩북의 게시물
     elif path[1] == 'all' or path[1] == 'scrapbook':
         if len(path) > 2:
             try:
@@ -208,10 +208,11 @@ def replace_link(content_str):
 
         return replace_link(content_str.replace(old_link, new_link, 1))
 
+    # case 5: 메인페이지
     elif path[1] == 'main':
         return replace_link(content_str.replace(old_link, NEWARA_LINK, 1))
 
-    # case 4: link to blacklist page
+    # case 6: link to blacklist page
     elif old_link.find('blacklist') > -1:
         new_link = NEWARA_LINK + 'myinfo' # 뉴아라에서는 blacklist를 마이페이지에서 볼 수 있음
         return replace_link(content_str.replace(old_link, new_link, 1))

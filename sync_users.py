@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # import boto3 as boto3
 # import bs4 as bs4
@@ -7,7 +7,7 @@ from datetime import datetime
 from mysql import ara_cursor, newara_middle_cursor, newara_middle_db
 from query import read_queries, write_queries
 
-
+#
 # s3 = boto3.resource('s3')
 # client = boto3.client('s3')
 
@@ -21,13 +21,13 @@ def _sync_auth_user(users, miss_users):
             if user['username'] == "??": username = "dup??"
             else: username = user['username']
 
-            if not user['join_time']: join_time = datetime.now().isoformat()
-            else: join_time = user['join_time'].isoformat()
+            if not user['join_time']: join_time = (datetime.now() - timedelta(hours=9)).isoformat()
+            else: join_time = (user['join_time'] - timedelta(hours=9)).isoformat()
             parsed = {
                 'id': user['id'],
                 'new_id': new_id_val,
                 'password': user['password'],
-                'last_login': (user['last_login_time'] if user['last_login_time'] else datetime.min).isoformat(),
+                'last_login': ((user['last_login_time'] - timedelta(hours=9)) if user['last_login_time'] else datetime.min).isoformat(),
                 'is_superuser': 0,
                 'username': username or "__deleted__{}".format(user['id']),
                 'first_name': "",
@@ -88,11 +88,11 @@ def _sync_user_userprofile(users, auth_users_dict, id_to_newid_dict, users_name_
                 nickname = user['username']
 
             if not user['join_time']: join_time = datetime.now().isoformat()
-            else: join_time = user['join_time'].isoformat()
+            else: join_time = (user['join_time'] - timedelta(hours=9)).isoformat()
             parsed = {
                 'created_at': join_time,
                 'updated_at': join_time,
-                'deleted_at': (user['last_login_time'] if user['deleted'] else datetime.min).isoformat(),
+                'deleted_at': ((user['last_login_time'] - timedelta(hours=9)) if user['deleted'] else datetime.min).isoformat(),
                 'uid': None,
                 'sid': None,
                 'sso_user_info': "{}",
@@ -143,13 +143,14 @@ def get_use_id(auth_users, user_id):
         if auth_user['id'] == user_id:
             return auth_user['id']
 
+
 def sync_users():
     FETCH_NUM = 80000
 
     ara_cursor.execute(query=read_queries['users'] .format(FETCH_NUM))
     users = ara_cursor.fetchall()
 
-    miss_users = [65673, 69660]
+    miss_users = [65673, 69660, 81408]
 
     users_name_dict = {}
     # for u in users:
