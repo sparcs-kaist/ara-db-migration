@@ -370,7 +370,7 @@ def sync():
 
     print("fetched files and articles")
 
-    # _sync_articles(articles, auth_users_dict)
+    _sync_articles(articles, auth_users_dict)
     _sync_attachments(files, articles_dict)
 
     newara_middle_cursor.execute(query=read_queries['core_article'].format(FETCH_NUM))
