@@ -34,7 +34,7 @@ def _match_board_and_topic(ara_board, ara_heading):
         10: (2, 9),
         9: (2, 4),
         8: (2, 1),
-        4: (4, 13),
+        4: (7, 13),
         1: (7, None),
         2: (7, None),
         3: (7, None),
