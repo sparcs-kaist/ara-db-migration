@@ -94,6 +94,10 @@ def _match_board_and_topic(ara_board, ara_heading):
         return (None, None)
 
 
+def _replace_enter(s):
+    return s.replace('\r\n', '<br>').replace('\n', '<br>')
+
+
 def _sync_articles(articles, auth_users_dict):
     newara_articles = []
 
@@ -116,7 +120,7 @@ def _sync_articles(articles, auth_users_dict):
                 'updated_at': (article['date'] - timedelta(hours=9)).isoformat(),
                 'deleted_at': ((article['date'] - timedelta(hours=9)) if article['deleted'] else datetime.min).isoformat(),
                 'title': article['title'],
-                'content': article['content'],
+                'content': _replace_enter(article['content']),
                 'content_text': ' '.join(bs4.BeautifulSoup(article['content'], features='html5lib').find_all(text=True)),
                 'is_anonymous': False,
                 'is_content_sexual': False,
