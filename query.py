@@ -2,7 +2,7 @@ read_queries = {
     # 'articles': """select A.id, A.title, A.board_id, content, A.author_id, B.nickname, A.date,
     #                A.hit, A.positive_vote, A.negative_vote, A.deleted, A.destroyed, A.last_reply_date
     #                from articles A inner join users B where A.author_id = B.id;""",
-    'articles': """select id, title, board_id, content, author_id, date,
+    'articles': """select id, title, board_id, heading_id, content, author_id, date,
                    hit, positive_vote, negative_vote, deleted, destroyed, last_reply_date,
                    root_id, parent_id
                    from articles LIMIT {};""",
@@ -117,5 +117,5 @@ delete_queries = {
 update_queries = {
     'core_article_content': """UPDATE core_article SET content = %s, content_text = %s WHERE id = %s;""",
     'core_comment_content': """UPDATE core_comment SET content = %s WHERE id = %s;""",
-
+    'core_attachment': """UPDATE core_attachment SET file = %s WHERE id = %s;""",
 }

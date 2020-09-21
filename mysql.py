@@ -14,7 +14,7 @@ newara_middle_db = pymysql.connect(
         user='root',
         passwd='',
         host='127.0.0.1',
-        db='new_ara_migration',
+        db='new_ara_migration_full',
         charset='utf8'
     )
 
@@ -24,7 +24,7 @@ newara_consecutive_db = pymysql.connect(
         user='root',
         passwd='',
         host='127.0.0.1',
-        db='new_ara_consecutive',
+        db='new_ara_consecutive_full',
         charset='utf8'
     )
 

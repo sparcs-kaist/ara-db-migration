@@ -4,6 +4,7 @@ from sync import sync
 from sync_users import sync_users
 from consecutive import make_consecutive_id
 from relink import update_ara_links
+from change_attachment_name import change_attachment_name_in_s3
 
 import time
 
