@@ -1,3 +1,4 @@
+import random
 from datetime import datetime
 
 from mysql import ara_cursor, newara_middle_cursor, newara_middle_db, newara_consecutive_cursor, newara_consecutive_db
@@ -30,6 +31,17 @@ def _make_consecutive_auth_user_id(users):
     newara_consecutive_db.commit()
 
 
+def _make_random_profile_picture() -> str:
+    colors = ['blue', 'red', 'gray']
+    numbers = ['1', '2', '3']
+
+    temp_color = random.choice(colors)
+    temp_num = random.choice(numbers)
+    default_picture = f'user_profiles/default_pictures/{temp_color}-default{temp_num}.png'
+
+    return default_picture
+
+
 def _make_consecutive_user_userprofile_id(users):
     newara_user_userprofile = []
 
@@ -41,7 +53,7 @@ def _make_consecutive_user_userprofile_id(users):
             'uid': user['uid'],
             'sid': user['sid'],
             'sso_user_info': user['sso_user_info'],
-            'picture': user['picture'],
+            'picture': user['picture'] or _make_random_profile_picture(),
             'nickname': user['nickname'],
             'nickname_updated_at': user['nickname_updated_at'],
             'see_sexual': user['see_sexual'],
