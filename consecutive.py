@@ -144,9 +144,6 @@ def _make_consecutive_attachment_id(attachments, files_hash_to_name_dict):
         path_list[5] = new_name
         new_path = '/'.join(path_list)
 
-        print('old: ', att['file'])
-        print('new: ', new_path)
-
         parsed = {
             'id': att['new_id'],
             'created_at': att['created_at'],
@@ -162,9 +159,7 @@ def _make_consecutive_attachment_id(attachments, files_hash_to_name_dict):
             maxlenstr = new_path
             maxlenstrold = att['file']
 
-    print('maxlen: ', maxlen)
-    print('maxlen str: ', maxlenstr)
-    print('maxlen str old: ', maxlenstrold)
+
     print(datetime.now(), 'make consecutive attachment')
     newara_consecutive_cursor.executemany(write_queries['core_attachment_consecutive'], newara_attachments)
     newara_consecutive_db.commit()
