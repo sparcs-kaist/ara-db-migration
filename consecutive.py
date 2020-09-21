@@ -1,8 +1,9 @@
 import random
 from datetime import datetime
 
-from mysql import newara_middle_cursor, newara_middle_db, newara_consecutive_cursor, newara_consecutive_db
+from mysql import ara_cursor, newara_middle_cursor, newara_middle_db, newara_consecutive_cursor, newara_consecutive_db
 from query import read_queries, write_queries
+from tqdm import tqdm
 
 
 def _make_consecutive_auth_user_id(users):
@@ -105,21 +106,65 @@ def _make_consecutive_article_id(articles, user_id_to_newid_dict):
     newara_consecutive_db.commit()
 
 
-def _make_consecutive_attachment_id(attachments):
+# make attachment id consecutive and change 'file' from hash to actual file name
+def _make_consecutive_attachment_id(attachments, files_hash_to_name_dict):
     newara_attachments = []
 
-    for att in attachments:
+    # 같은 날에 올라온 attachment names 저장 (같은 날에 같은 이름의 파일들이 여러개 올라오면, 뒤에 1, 2, 3, ... 붙여주기 위함)
+    current_date = ''
+    current_date_attachments = []
+
+    maxlen = 0
+    maxlenstr = ''
+    maxlenstrold = ''
+
+    for att in tqdm(attachments):
+        # parse file path
+        path_list = att['file'].split('/')
+        old_filename = files_hash_to_name_dict[path_list[5]].replace(' ', '_')
+        new_name = old_filename
+        separator = '.'
+
+        # 날짜 트래킹 (같은 날짜의 첨부파일은 같은 폴더에 있으므로, 이름이 같을 시 바꿔주기 위해 같은 날짜의 파일들을 모아보기 위한 리스트 생성)
+        # if new day, reset current_date_attachments list
+        if current_date != path_list[4]:  # if beginning of new date
+            current_date = path_list[4]  # update current date
+            current_date_attachments = [old_filename]
+
+        # if file with same name exists in current bucket, add '_i' to current file name (i=1,2,3,...)
+        else:
+            i = 1
+            while new_name in current_date_attachments:
+                name_list = old_filename.split('.')  # 끝에 .jpg, .pdf 등 확장자가 있는 경우를 위해
+                name_list[0] = name_list[0] + f'({i})'
+                new_name = separator.join(name_list)
+                i = i + 1
+            current_date_attachments.append(new_name)
+
+        path_list[5] = new_name
+        new_path = '/'.join(path_list)
+
+        print('old: ', att['file'])
+        print('new: ', new_path)
+
         parsed = {
             'id': att['new_id'],
             'created_at': att['created_at'],
             'updated_at': att['updated_at'],
             'deleted_at': att['deleted_at'],
-            'file': att['file'],
+            'file': new_path,
             'mimetype': att['mimetype'],
             'size': att['size'],
         }
         newara_attachments.append(tuple(parsed.values()))
+        if maxlen < len(new_path):
+            maxlen = len(new_path)
+            maxlenstr = new_path
+            maxlenstrold = att['file']
 
+    print('maxlen: ', maxlen)
+    print('maxlen str: ', maxlenstr)
+    print('maxlen str old: ', maxlenstrold)
     print(datetime.now(), 'make consecutive attachment')
     newara_consecutive_cursor.executemany(write_queries['core_attachment_consecutive'], newara_attachments)
     newara_consecutive_db.commit()
@@ -209,9 +254,17 @@ def make_consecutive_id():
     _make_consecutive_article_id(core_articles, user_id_to_newid_dict)
     print(datetime.now(), 'article id modification finished')
 
+    # fetch attachment hash and attachment name from original aradump db
+    # with original ara db, create a dictionary of (key: file hash, val: filename)
+    ara_cursor.execute(query=read_queries['files'].format(FETCH_NUM))
+    files = ara_cursor.fetchall()
+    files_hash_to_name_dict = {}
+    for f in files:
+        files_hash_to_name_dict[f['saved_filename']] = f['filename']
+
     newara_middle_cursor.execute(query=read_queries['core_attachment'].format(FETCH_NUM))
     core_attachments = newara_middle_cursor.fetchall()
-    _make_consecutive_attachment_id(core_attachments)
+    _make_consecutive_attachment_id(core_attachments, files_hash_to_name_dict)
     print(datetime.now(), 'attachment id modification finished')
 
     newara_middle_cursor.execute(query=read_queries['core_article_attachments'].format(FETCH_NUM))
