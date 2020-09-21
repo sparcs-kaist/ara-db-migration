@@ -253,7 +253,7 @@ def update_ara_links():
 
     relink_articles(articles_with_links)
 
-    # check comments
+    # # check comments
     print('start relinking comments')
 
     # identify all comments that contain "ara.kaist.ac.kr"
