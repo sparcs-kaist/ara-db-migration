@@ -135,7 +135,7 @@ def _make_consecutive_attachment_id(attachments, files_hash_to_name_dict):
         else:
             i = 1
             while new_name in current_date_attachments:
-                name_list = old_filename.split('.')  # 끝에 .jpg, .pdf 등 확장자가 있는 경우를 위해
+                name_list = old_filename.rsplit('.', 1)  # 끝에 .jpg, .pdf 등 확장자가 있는 경우를 위해
                 name_list[0] = name_list[0] + f'({i})'
                 new_name = separator.join(name_list)
                 i = i + 1
