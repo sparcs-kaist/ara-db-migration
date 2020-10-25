@@ -1,7 +1,7 @@
 import random
 from datetime import datetime
 
-from mysql import ara_cursor, newara_middle_cursor, newara_middle_db, newara_consecutive_cursor, newara_consecutive_db
+from mysql import ara_cursor, newara_middle_cursor, newara_consecutive_cursor, newara_consecutive_db
 from query import read_queries, write_queries
 from tqdm import tqdm
 
