@@ -2,6 +2,7 @@ from datetime import datetime
 
 from mysql import ara_cursor, newara_middle_cursor, newara_middle_db, newara_consecutive_cursor, newara_consecutive_db
 from query import read_queries, write_queries, update_queries
+from tqdm import tqdm
 
 
 NEWARA_LINK = 'https://newara.sparcs.org'
@@ -34,7 +35,7 @@ old_board_name_to_new_name = {
 def relink_articles(articles_with_links):
     newara_articles = []
 
-    for article in articles_with_links:
+    for article in tqdm(articles_with_links):
         parsed = {
             'content': replace_link(article['content']),
             'content_text': replace_link(article['content_text']),
@@ -51,7 +52,7 @@ def relink_articles(articles_with_links):
 def relink_comments(comments_with_links):
     newara_comments = []
 
-    for c in comments_with_links:
+    for c in tqdm(comments_with_links):
         parsed = {
             'content': replace_link(c['content']),
             'id': c['id'],
@@ -79,6 +80,7 @@ def replace_link(content_str):
     link_end5 = content_str.find('\r', link_begin_pos)
     link_end6 = content_str.find('을', link_begin_pos)
     link_end7 = content_str.find('로', link_begin_pos)
+    link_end8 = content_str.find('<', link_begin_pos)
 
     if link_end1 == -1:
         link_end1 = 1000000
@@ -94,9 +96,11 @@ def replace_link(content_str):
         link_end6 = 1000000
     if link_end7 == -1:
         link_end7 = 1000000
+    if link_end8 == -1:
+        link_end8 = 1000000
 
     # identify which candidate is end of link
-    link_end_pos = min((link_end1, link_end2, link_end3, link_end4, link_end5, link_end6, link_end7))
+    link_end_pos = min((link_end1, link_end2, link_end3, link_end4, link_end5, link_end6, link_end7, link_end8))
 
     if link_end_pos == 1000000:
         link_end_pos = len(content_str)
