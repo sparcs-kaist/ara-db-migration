@@ -52,6 +52,37 @@ select * from core_board;
 
 ```
 
+e) 생성된 2개의 db 둘다, core_topic 안에 토픽을 넣어줍니다 (각 db에서 아래 sql문을 실행해주면 됩니다)
+```
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (1, '2020-09-01 07:39:40.466494', '2020-09-01 08:03:22.272649', '0001-01-01 00:00:00', 'undergrad-assoc', '총학', 'Undergrad Assoc', '총학생회', 'Undergrad Association', 2);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (2, '2020-09-01 07:42:31.979771', '2020-09-01 08:03:43.079509', '0001-01-01 00:00:00', 'clubs-union', '동연', 'Clubs Union', '동연', 'Kaist Undergraduate Student Clubs Union', 2);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (3, '2020-09-01 07:42:46.462173', '2020-09-01 08:04:49.175494', '0001-01-01 00:00:00', 'dorm-council', '생자회', 'Dorm Council', '생자회', 'Student Dormitory Council', 2);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (4, '2020-09-01 07:43:40.164637', '2020-09-01 08:05:52.474215', '0001-01-01 00:00:00', 'welfare-cmte', '학복위', 'Welfare Cmte', '학복위', 'Student Welfare Committee', 2);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (5, '2020-09-01 07:44:18.370467', '2020-09-01 08:06:06.285399', '0001-01-01 00:00:00', 'freshman-council', '새학', 'Freshman Council', '새학', 'Freshman Council', 2);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (6, '2020-09-01 07:44:32.281274', '2020-09-01 08:06:29.871811', '0001-01-01 00:00:00', 'scspace', '공간위', 'SCSpace', '공간위', 'Student Culture & Space Committee', 2);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (7, '2020-09-01 07:44:48.468692', '2020-09-01 08:06:49.068874', '0001-01-01 00:00:00', 'kcoop', '협동조합', 'Kcoop', '협동조합', 'KAIST COOP', 2);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (8, '2020-09-01 07:45:00.872834', '2020-09-01 07:45:00.872866', '0001-01-01 00:00:00', 'times', '신문사', 'Times', '신문사', 'KAIST Times', 2);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (9, '2020-09-01 07:45:10.683788', '2020-09-01 07:45:10.683845', '0001-01-01 00:00:00', 'imgeffect', '상상효과', 'IMGEFFECT', '상상효과', 'IMGEFFECT', 2);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (10, '2020-09-01 07:45:44.170572', '2020-09-01 07:45:44.170646', '0001-01-01 00:00:00', 'lostfound', '분실물', 'lost&found', '분실물', 'lost&found', 7);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (11, '2020-09-01 07:46:20.175232', '2020-09-01 07:46:20.175275', '0001-01-01 00:00:00', 'love', '연애', 'love', '연애', 'love', 7);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (12, '2020-09-01 07:47:20.788532', '2020-09-01 07:47:20.788562', '0001-01-01 00:00:00', 'game', '게임', 'game', '게임', 'game', 7);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (13, '2020-09-01 07:47:38.868966', '2020-09-01 07:47:38.869012', '0001-01-01 00:00:00', 'money', '돈', 'money', '돈', 'money', 7);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (14, '2020-09-01 07:48:43.183453', '2020-09-01 07:48:43.183500', '0001-01-01 00:00:00', 'tutoring', '과외', 'Tutoring', '과외', 'Tutoring', 3);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (15, '2020-09-01 07:49:02.981175', '2020-09-01 07:49:02.981234', '0001-01-01 00:00:00', 'intern', '인턴', 'Intern', '인턴', 'Intern', 3);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (16, '2020-09-01 07:49:23.063948', '2020-09-01 07:49:23.063986', '0001-01-01 00:00:00', 'job', '채용', 'Job', '채용', 'Job', 3);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (17, '2020-09-01 07:49:45.863481', '2020-09-01 07:49:45.863539', '0001-01-01 00:00:00', 'experiment', '실험', 'Experiment', '실험', 'Experiment', 3);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (18, '2020-09-01 07:50:24.482162', '2020-09-01 07:50:24.482206', '0001-01-01 00:00:00', 'dorm', '기숙사', 'Dorm', '기숙사', 'Dormitory', 3);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (19, '2020-09-01 07:50:43.864350', '2020-09-01 07:50:43.864398', '0001-01-01 00:00:00', 'carpool', '카풀', 'Carpool', '카풀', 'Carpool', 3);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (20, '2020-09-01 07:51:23.266517', '2020-09-01 07:51:23.266559', '0001-01-01 00:00:00', 'housing', '부동산', 'Housing', '부동산', 'Housing', 4);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (21, '2020-09-01 07:51:44.478958', '2020-09-01 07:51:44.479049', '0001-01-01 00:00:00', 'buy', '삽니다', 'Buy', '삽니다', 'Buy', 4);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (22, '2020-09-01 07:52:03.172476', '2020-09-01 07:52:03.172524', '0001-01-01 00:00:00', 'sell', '팝니다', 'Sell', '팝니다', 'Sell', 4);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (23, '2020-09-01 07:52:48.581208', '2020-09-01 07:52:48.581238', '0001-01-01 00:00:00', 'complaints', '건의', 'Complaints', '건의', 'Complaints', 5);
+INSERT INTO core_topic (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, parent_board_id) VALUES (24, '2020-09-01 07:53:09.973728', '2020-09-01 07:53:09.973776', '0001-01-01 00:00:00', 'events', '이벤트', 'Events', '이벤트', 'Events', 5);
+
+SELECT * FROM core_topic;
+```
+
+
 # 2. 코드 수정
 ara-db-migration에서, 다음 부분들을 수정해주어야합니다.
 
