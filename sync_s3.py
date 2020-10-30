@@ -79,17 +79,33 @@ def sync_s3():
     attachment_oldkey_to_newkey_dict = _rename_attachments(core_attachments, files_hash_to_name_dict)
 
     s3 = boto3.resource('s3')
-    client = boto3.client('s3')
 
     # rename files in s3
     for key, value in tqdm(attachment_oldkey_to_newkey_dict.items()):
         print('key: ', key, '    value: ', value)
-        try:
-            s3.Object('sparcs-newara', value).copy_from(CopySource=f'sparcs-newara/{key}')
-            s3.Object('sparcs-newara', key).delete()
-        except ClientError:
-            print(f'File not exist in s3: {key}')
-            pass
+
+        file_path = key.rsplit('/', 2)[0]
+        do_copy = False
+
+        if file_path in [
+            'ara-files/BuySell/2020/9',
+            'ara-files/Food/2020/9',
+            'ara-files/Garbages/2020/9',
+            'ara-files/Hobby/2020/9',
+            'ara-files/Housing/2020/9',
+            'ara-files/Jobs/2020/9',
+            'ara-files/Notice/2020/9',
+            'ara-files/Wanted/2020/9',
+        ]:
+            do_copy = True
+
+        if do_copy:
+            try:
+                s3.Object('sparcs-newara', value).copy_from(CopySource=f'sparcs-newara/{key}')
+                s3.Object('sparcs-newara', key).delete()
+            except ClientError:
+                print(f'File not exist in s3: {key}')
+                pass
 
 
 
