@@ -15,9 +15,10 @@ init:
 
 b) new-ara-api 디렉토리에서 `$ make init`을 실행하여 new_ara_migration DB 생성
 
-c) datagrip에서, 생성된 new_ara_migration DB에서 다음 4개의 테이블에 new_id라는 int 칼럼을 추가합니다.
+c) datagrip에서, 생성된 new_ara_migration DB에서 다음 5개의 테이블에 new_id라는 int 칼럼을 추가합니다.
 - auth_user
 - core_article
+- core_attachment
 - core_comment
 - user_userprofile
 
@@ -36,6 +37,19 @@ c) 여기까지 마치고 나면, Makefile의 init:을 원래 상태로 되돌�
 init:
 	mysql -u root -e 'CREATE DATABASE new_ara CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;'
 	python manage.py migrate
+```
+d) 생성된 2개의 db 둘다, core_board 안에 게시판 정보를 넣어줍니다 (각 db에서 아래 sql문을 실행해주면 됩니다)
+```
+INSERT INTO core_board (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, is_readonly, access_mask, is_hidden) VALUES (1, '2020-04-05 01:48:21.783681', '0001-01-01 00:00:00', '0001-01-01 00:00:00', 'portal-notice', '포탈공지', 'portal notice', '포탈공지', 'portal notice', 1, 2, 0);
+INSERT INTO core_board (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, is_readonly, access_mask, is_hidden) VALUES (2, '2020-04-05 01:48:51.336389', '0001-01-01 00:00:00', '0001-01-01 00:00:00', 'organization-notice', '학생공지', 'organization notice', '학생단체', 'organization notice', 0, 2, 0);
+INSERT INTO core_board (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, is_readonly, access_mask, is_hidden) VALUES (3, '2020-09-01 07:29:46.471271', '2020-09-01 07:29:46.471313', '0001-01-01 00:00:00', 'wanted', 'Wanted', 'Wanted', 'Wanted', 'Wanted', 0, 2, 0);
+INSERT INTO core_board (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, is_readonly, access_mask, is_hidden) VALUES (4, '2020-09-01 07:30:25.884216', '2020-09-01 07:30:25.884273', '0001-01-01 00:00:00', 'market', '장터', 'Market', '장터', 'Market', 0, 2, 0);
+INSERT INTO core_board (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, is_readonly, access_mask, is_hidden) VALUES (5, '2020-09-01 07:36:40.279773', '2020-09-01 07:36:40.279830', '0001-01-01 00:00:00', 'food', '식사이야기', 'Food', '식사이야기', 'Food', 0, 6, 0);
+INSERT INTO core_board (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, is_readonly, access_mask, is_hidden) VALUES (6, '2020-09-01 07:37:07.467017', '2020-09-01 07:37:07.467076', '0001-01-01 00:00:00', 'qa', 'Q&A', 'Q&A', 'Q&A', 'Q&A', 0, 2, 0);
+INSERT INTO core_board (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, is_readonly, access_mask, is_hidden) VALUES (7, '2020-09-01 07:37:47.576955', '2020-09-01 07:37:47.577012', '0001-01-01 00:00:00', 'talk', '자유게시판', 'Talk', '자유게시판', 'Talk', 0, 2, 0);
+
+select * from core_board;
+
 ```
 
 # 2. 코드 수정
