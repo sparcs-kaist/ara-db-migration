@@ -38,7 +38,7 @@ init:
 	mysql -u root -e 'CREATE DATABASE new_ara CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;'
 	python manage.py migrate
 ```
-d) 생성된 2개의 db 둘다, core_board 안에 게시판 정보를 넣어줍니다 (아래 sql문을 실행해주면 됩니다)
+d) 생성된 2개의 db 둘다, core_board 안에 게시판 정보를 넣어줍니다 (각 db에서 아래 sql문을 실행해주면 됩니다)
 ```
 INSERT INTO core_board (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, is_readonly, access_mask, is_hidden) VALUES (1, '2020-04-05 01:48:21.783681', '0001-01-01 00:00:00', '0001-01-01 00:00:00', 'portal-notice', '포탈공지', 'portal notice', '포탈공지', 'portal notice', 1, 2, 0);
 INSERT INTO core_board (id, created_at, updated_at, deleted_at, slug, ko_name, en_name, ko_description, en_description, is_readonly, access_mask, is_hidden) VALUES (2, '2020-04-05 01:48:51.336389', '0001-01-01 00:00:00', '0001-01-01 00:00:00', 'organization-notice', '학생공지', 'organization notice', '학생단체', 'organization notice', 0, 2, 0);
