@@ -133,6 +133,7 @@ def _sync_articles(articles, auth_users_dict):
                 'parent_board_id': _match_board_and_topic(article['board_id'], article['heading_id'])[0],
                 'parent_topic_id': _match_board_and_topic(article['board_id'], article['heading_id'])[1],
                 'url': None,
+                'comment_count': article['reply_count'],
             }
 
             if parsed['parent_board_id'] is not None:
