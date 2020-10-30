@@ -172,14 +172,10 @@ def _sync_attachments(files, articles_dict):
                 'updated_at': (article['date'] - timedelta(hours=9)).isoformat(),
                 'deleted_at': ((article['date'] - timedelta(hours=9)) if article['deleted'] else datetime.min).isoformat(),
                 'file': 'ara-files/{}/{}'.format(f['filepath'], f['saved_filename']),
-                'mimetype': 'migration failed',
+                'mimetype': 'migrated',
                 'size': 0,
             }
             new_id_val += 1
-            file = _get_s3_object(parsed['file'])
-            if file:
-                parsed['size'] = file['size']
-                parsed['mimetype'] = file['content_type']
             newara_files.append(tuple(parsed.values()))
 
     print(datetime.now(), 'sync attachment')
