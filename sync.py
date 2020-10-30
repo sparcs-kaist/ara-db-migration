@@ -126,14 +126,18 @@ def _sync_articles(articles, auth_users_dict):
                 'is_content_sexual': False,
                 'is_content_social': False,
                 'hit_count': article['hit'],
+                'migrated_hit_count': article['hit'],
                 'positive_vote_count': article['positive_vote'],
                 'negative_vote_count': article['negative_vote'],
+                'migrated_positive_vote_count': article['positive_vote'],
+                'migrated_negative_vote_count': article['negative_vote'],
                 'commented_at': (article['last_reply_date'] - timedelta(hours=9)).isoformat(),
                 'created_by_id': author_id,
                 'parent_board_id': _match_board_and_topic(article['board_id'], article['heading_id'])[0],
                 'parent_topic_id': _match_board_and_topic(article['board_id'], article['heading_id'])[1],
                 'url': None,
                 'comment_count': article['reply_count'],
+                'content_updated_at': (article['date'] - timedelta(hours=9)).isoformat(),
             }
 
             if parsed['parent_board_id'] is not None:

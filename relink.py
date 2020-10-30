@@ -4,7 +4,7 @@ from mysql import ara_cursor, newara_middle_cursor, newara_middle_db, newara_con
 from query import read_queries, write_queries, update_queries
 
 
-NEWARA_LINK = 'https://newara.dev.sparcs.org/'
+NEWARA_LINK = 'https://newara.sparcs.org'
 
 corner_cases = [] # cases that cannot be changed to NEWARA_LINK
 
