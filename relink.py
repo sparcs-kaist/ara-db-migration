@@ -82,6 +82,7 @@ def replace_link(content_str):
     link_end7 = content_str.find('로', link_begin_pos)
     link_end8 = content_str.find('<', link_begin_pos)
     link_end9 = content_str.find('.<', link_begin_pos)
+    link_end10 = content_str.find(',', link_begin_pos)
 
     if link_end1 == -1:
         link_end1 = 1000000
@@ -101,9 +102,11 @@ def replace_link(content_str):
         link_end8 = 1000000
     if link_end9 == -1:
         link_end9 = 1000000
+    if link_end10 == -1:
+        link_end10 = 1000000
 
     # identify which candidate is end of link
-    link_end_pos = min((link_end1, link_end2, link_end3, link_end4, link_end5, link_end6, link_end7, link_end8, link_end9))
+    link_end_pos = min((link_end1, link_end2, link_end3, link_end4, link_end5, link_end6, link_end7, link_end8, link_end9, link_end10))
 
     if link_end_pos == 1000000:
         link_end_pos = len(content_str)
@@ -144,7 +147,7 @@ def replace_link(content_str):
             file_index = path.index('file')
             old_attachment_id = int(path[file_index + 1])
             attachment_path = attachment_id_to_path_dict[old_attachment_id]
-            new_link = 'https://sparcs-newara.s3.amazonaws.com/ara-' + attachment_path
+            new_link = 'sparcs-newara.s3.amazonaws.com/ara-' + attachment_path
             return replace_link(content_str.replace(old_link, new_link, 1))
 
         # case 2-c: link is write page
