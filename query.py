@@ -91,7 +91,7 @@ write_queries = {
                     is_anonymous, is_content_sexual, is_content_social, hit_count,
                     positive_vote_count, negative_vote_count, commented_at, created_by_id, parent_board_id,
                     parent_topic_id, url, migrated_hit_count, migrated_positive_vote_count, migrated_negative_vote_count, comment_count,
-                    last_updated_at)
+                    content_updated_at)
                     values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
     'core_comment_consecutive': """insert into core_comment(id, created_at, updated_at, deleted_at, content,
                      is_anonymous, positive_vote_count, negative_vote_count, attachment_id, 
