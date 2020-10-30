@@ -7,9 +7,6 @@ from datetime import datetime, timedelta
 from mysql import ara_cursor, newara_middle_cursor, newara_middle_db
 from query import read_queries, write_queries
 
-#
-# s3 = boto3.resource('s3')
-# client = boto3.client('s3')
 
 def _sync_auth_user(users, miss_users):
     newara_auth_user = []

@@ -98,6 +98,8 @@ def _make_consecutive_article_id(articles, user_id_to_newid_dict):
             'migrated_hit_count': article['hit_count'],
             'migrated_positive_vote_count': article['positive_vote_count'],
             'migrated_negative_vote_count': article['negative_vote_count'],
+            'comment_count': article['comment_count'],
+            'last_updated_at': article['updated_at'],
         }
         newara_articles.append(tuple(parsed.values()))
 

@@ -2,6 +2,7 @@ from datetime import datetime
 
 from sync import sync
 from sync_users import sync_users
+from sync_s3 import sync_s3
 from consecutive import make_consecutive_id
 from relink import update_ara_links
 
@@ -15,6 +16,7 @@ def main():
     sync()
     make_consecutive_id()
     update_ara_links()
+    sync_s3()
     end = time.time()
     print("Migration took {} seconds".format(end-start))
 

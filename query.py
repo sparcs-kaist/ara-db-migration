@@ -1,20 +1,11 @@
 read_queries = {
-    # 'articles': """select A.id, A.title, A.board_id, content, A.author_id, B.nickname, A.date,
-    #                A.hit, A.positive_vote, A.negative_vote, A.deleted, A.destroyed, A.last_reply_date
-    #                from articles A inner join users B where A.author_id = B.id;""",
+
+
+    # ARA
     'articles': """select id, title, board_id, content, author_id, date,
                    hit, positive_vote, negative_vote, deleted, destroyed, last_reply_date,
-                   root_id, parent_id
+                   root_id, parent_id, reply_count
                    from articles LIMIT {};""",
-    'core_article': """select id, new_id, created_at, updated_at, deleted_at, title, content, content_text,
-                       is_anonymous, is_content_sexual, is_content_social, hit_count,
-                       positive_vote_count, negative_vote_count, commented_at, created_by_id, parent_board_id,
-                       parent_topic_id, url
-                        from core_article LIMIT {};""",
-    'core_comment': """select id, new_id, created_at, updated_at, deleted_at, content,
-                       is_anonymous, positive_vote_count, negative_vote_count, attachment_id, 
-                       created_by_id, parent_article_id, parent_comment_id
-                        from core_comment LIMIT {};""",
     'files': """select id, filename, saved_filename, filepath,
                 user_id, board_id, article_id, deleted 
                 from files LIMIT {};""",
@@ -24,6 +15,17 @@ read_queries = {
                 authentication_mode, listing_mode, activated_backup, deleted, genuine_email_address
                 from users LIMIT {};""",
 
+
+    # NEWARA
+    'core_article': """select id, new_id, created_at, updated_at, deleted_at, title, content, content_text,
+                   is_anonymous, is_content_sexual, is_content_social, hit_count,
+                   positive_vote_count, negative_vote_count, commented_at, created_by_id, parent_board_id,
+                   parent_topic_id, url, comment_count
+                    from core_article LIMIT {};""",
+    'core_comment': """select id, new_id, created_at, updated_at, deleted_at, content,
+                   is_anonymous, positive_vote_count, negative_vote_count, attachment_id, 
+                   created_by_id, parent_article_id, parent_comment_id
+                    from core_comment LIMIT {};""",
     'core_attachment': """select id, new_id, created_at, updated_at, deleted_at, file, mimetype, size
                             from core_attachment LIMIT {};""",
     'core_article_attachments': """select id, article_id, attachment_id
@@ -36,6 +38,8 @@ read_queries = {
                             user_id, new_id, is_newara, ara_id, `group`
                             from user_userprofile LIMIT {};""",
 
+
+    # NEWARA-consecutive
     'auth_user_consecutive': """select id, password, last_login, is_superuser, username, first_name, last_name,
                    email, is_staff, is_active, date_joined
                    from auth_user LIMIT {};""",
@@ -46,7 +50,7 @@ read_queries = {
     'core_article_consecutive': """select id, created_at, updated_at, deleted_at, title, content, content_text,
                     is_anonymous, is_content_sexual, is_content_social, hit_count,
                     positive_vote_count, negative_vote_count, commented_at, created_by_id, parent_board_id,
-                    parent_topic_id, url
+                    parent_topic_id, url, comment_count
                      from core_article LIMIT {};""",
     'core_comment_consecutive': """select id, created_at, updated_at, deleted_at, content,
                     is_anonymous, positive_vote_count, negative_vote_count, attachment_id, 
@@ -65,8 +69,8 @@ write_queries = {
     'core_article': """insert into core_article(id, new_id, created_at, updated_at, deleted_at, title, content, content_text,
                        is_anonymous, is_content_sexual, is_content_social, hit_count,
                        positive_vote_count, negative_vote_count, commented_at, created_by_id, parent_board_id,
-                       parent_topic_id, url)
-                       values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                       parent_topic_id, url, comment_count)
+                       values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
     'core_comment': """insert into core_comment(id, new_id, created_at, updated_at, deleted_at, content,
                         is_anonymous, positive_vote_count, negative_vote_count, attachment_id, 
                         created_by_id, parent_article_id, parent_comment_id)
@@ -86,8 +90,9 @@ write_queries = {
     'core_article_consecutive': """insert into core_article(id, created_at, updated_at, deleted_at, title, content, content_text,
                     is_anonymous, is_content_sexual, is_content_social, hit_count,
                     positive_vote_count, negative_vote_count, commented_at, created_by_id, parent_board_id,
-                    parent_topic_id, url, migrated_hit_count, migrated_positive_vote_count, migrated_negative_vote_count)
-                    values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                    parent_topic_id, url, migrated_hit_count, migrated_positive_vote_count, migrated_negative_vote_count, comment_count,
+                    last_updated_at)
+                    values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
     'core_comment_consecutive': """insert into core_comment(id, created_at, updated_at, deleted_at, content,
                      is_anonymous, positive_vote_count, negative_vote_count, attachment_id, 
                      created_by_id, parent_article_id, parent_comment_id)
