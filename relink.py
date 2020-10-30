@@ -5,7 +5,7 @@ from query import read_queries, write_queries, update_queries
 from tqdm import tqdm
 
 
-NEWARA_LINK = 'https://newara.sparcs.org'
+NEWARA_LINK = 'newara.sparcs.org'
 
 corner_cases = [] # cases that cannot be changed to NEWARA_LINK
 
@@ -81,6 +81,7 @@ def replace_link(content_str):
     link_end6 = content_str.find('을', link_begin_pos)
     link_end7 = content_str.find('로', link_begin_pos)
     link_end8 = content_str.find('<', link_begin_pos)
+    link_end9 = content_str.find('.<', link_begin_pos)
 
     if link_end1 == -1:
         link_end1 = 1000000
@@ -98,9 +99,11 @@ def replace_link(content_str):
         link_end7 = 1000000
     if link_end8 == -1:
         link_end8 = 1000000
+    if link_end9 == -1:
+        link_end9 = 1000000
 
     # identify which candidate is end of link
-    link_end_pos = min((link_end1, link_end2, link_end3, link_end4, link_end5, link_end6, link_end7, link_end8))
+    link_end_pos = min((link_end1, link_end2, link_end3, link_end4, link_end5, link_end6, link_end7, link_end8, link_end9))
 
     if link_end_pos == 1000000:
         link_end_pos = len(content_str)
