@@ -15,9 +15,10 @@ init:
 
 b) new-ara-api 디렉토리에서 `$ make init`을 실행하여 new_ara_migration DB 생성
 
-c) datagrip에서, 생성된 new_ara_migration DB에서 다음 4개의 테이블에 new_id라는 int 칼럼을 추가합니다.
+c) datagrip에서, 생성된 new_ara_migration DB에서 다음 5개의 테이블에 new_id라는 int 칼럼을 추가합니다.
 - auth_user
 - core_article
+- core_attachment
 - core_comment
 - user_userprofile
 
