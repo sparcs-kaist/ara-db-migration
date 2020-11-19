@@ -5,7 +5,7 @@ from query import read_queries, write_queries, update_queries
 from tqdm import tqdm
 
 
-NEWARA_LINK = 'newara.sparcs.org'
+NEWARA_LINK = 'newara.sparcs.org/'
 
 corner_cases = [] # cases that cannot be changed to NEWARA_LINK
 
